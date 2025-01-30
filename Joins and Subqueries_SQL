@@ -1,0 +1,160 @@
+# Top 10 movies contributed most  to revenue gain with genre:
+					
+SELECT					
+    A.title,					
+    C.name AS genre,				
+    SUM(F.amount) AS sales_revenue		
+FROM					
+    film A					
+INNER JOIN				
+    film_category B ON A.film_id = B.film_id	
+INNER JOIN				
+    category C ON B.category_id = C.category_id	
+INNER JOIN				
+    inventory D ON A.film_id = D.film_id		
+INNER JOIN				
+    rental E ON D.inventory_id = E.inventory_id	
+INNER JOIN				
+    payment F ON E.rental_id = F.rental_id		
+GROUP BY				
+    title, genre				
+ORDER BY				
+    sales_revenue DESC			
+LIMIT 10;					
+					
+
+# Top 10 movies contributed least to revenue gain with genre:
+
+SELECT				
+    A.title,				
+    C.name AS genre,			
+    SUM(F.amount) AS sales_revenue	
+FROM				
+    film A				
+INNER JOIN			
+    film_category B ON A.film_id = B.film_id
+INNER JOIN			
+    category C ON B.category_id = C.category_id
+INNER JOIN			
+    inventory D ON A.film_id = D.film_id	
+INNER JOIN			
+    rental E ON D.inventory_id = E.inventory_id
+INNER JOIN			
+    payment F ON E.rental_id = F.rental_id	
+GROUP BY			
+    title, genre			
+ORDER BY			
+    sales_revenue ASC		
+LIMIT 10;				
+				
+				
+# The total number of films per genre along with the total revenue distribution:
+
+SELECT				
+    C.name AS genre,			
+    COUNT(DISTINCT A.film_id) AS total_films,
+    SUM(F.amount) AS total_revenue	
+FROM				
+    film A				
+INNER JOIN			
+    film_category B ON A.film_id = B.film_id
+INNER JOIN			
+    category C ON B.category_id = C.category_id
+INNER JOIN			
+    inventory D ON A.film_id = D.film_id	
+INNER JOIN			
+    rental E ON D.inventory_id = E.inventory_id
+INNER JOIN			
+    payment F ON E.rental_id = F.rental_id	
+GROUP BY			
+    genre				
+ORDER BY			
+    total_revenue DESC;		
+				
+# The revenue distribution according to ratings:
+				
+SELECT				
+    A.rating,			
+    COUNT(DISTINCT A.film_id) AS total_films,
+    SUM(F.amount) AS total_revenue	
+FROM				
+    film A				
+INNER JOIN			
+    inventory B ON A.film_id = B.film_id	
+INNER JOIN			
+    rental C ON B.inventory_id = C.inventory_id
+INNER JOIN			
+    payment F ON C.rental_id = F.rental_id	
+GROUP BY			
+    A.rating			
+ORDER BY			
+    total_revenue DESC;		
+				
+# Which countries are Rockbuster customers based in?
+					
+SELECT D.country,				
+COUNT(A.customer_id) AS customer_count	
+FROM customer A				
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_id = C.city_id	
+INNER JOIN country D ON C.country_id = D.country_id
+GROUP BY D.country			
+ORDER BY customer_count DESC		
+					
+
+# Where are customers with a high lifetime value based?
+					
+# Top 10  most loyal customers			
+					
+SELECT					
+    C.city,					
+    D.country,				
+    -- Assuming lifetime_value is a metric or calculation for customer lifetime value
+    SUM(F.amount) AS lifetime_value		
+FROM					
+    customer A				
+INNER JOIN				
+    address B ON A.address_id = B.address_id	
+INNER JOIN				
+    city C ON B.city_id = C.city_id		
+INNER JOIN				
+    country D ON C.country_id = D.country_id	
+INNER JOIN				
+    rental E ON A.customer_id = E.customer_id	
+INNER JOIN				
+    payment F ON E.rental_id = F.rental_id		
+GROUP BY				
+    C.city, D.country, A.customer_id		
+ORDER BY				
+    lifetime_value DESC			
+LIMIT 10					
+					
+
+
+# Do sales figures vary between geographic regions?	 
+					
+SELECT					
+    D.country,				
+    COUNT(DISTINCT A.customer_id) AS total_customers,
+    COUNT(DISTINCT E.rental_id) AS total_rentals,	
+    SUM(F.amount) AS total_sales		
+FROM					
+    customer A				
+INNER JOIN				
+    address B ON A.address_id = B.address_id	
+INNER JOIN				
+    city C ON B.city_id = C.city_id		
+INNER JOIN				
+    country D ON C.country_id = D.country_id	
+INNER JOIN				
+    rental E ON A.customer_id = E.customer_id	
+INNER JOIN				
+    payment F ON E.rental_id = F.rental_id		
+GROUP BY				
+    D.country				
+ORDER BY				
+    total_sales DESC;				
+					
+					
+					
+				
